@@ -35,7 +35,7 @@ class ApiController extends BaseController
         $number = $request->number;
         $type = $request->type;
         $id_token = $request->id_token;
-    
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'nullable|string',
@@ -44,14 +44,14 @@ class ApiController extends BaseController
             'type' => 'nullable|string',
             'id_token' => 'nullable|string',
         ]);
-    
+
         $user = User::where('email', $email)->first();
-    
+
         if ($password == null && $id_token != null) {
             if ($user) {
                 return response()->json(['success' => false, 'message' => "{$user->email} already exists"], 200);
             }
-    
+
             $user = User::create([
                 'email' => $email,
                 'password' => $password,
@@ -62,11 +62,11 @@ class ApiController extends BaseController
             ]);
             return response()->json(['success' => true, 'message' => "Welcome to join, {$user->name}", 'data' => $user], 200);
         }
-    
+
         if ($email == null || $password == null || $name == null || $number == null) {
             return response()->json(['success' => false, 'errors' => 'All fields are required'], 200);
         }
-    
+
         if ($user && $user->email == 'ajay@gmail.com') {
             return response()->json(['success' => true, 'message' => "Welcome to join, {$user->name}", 'data' => $user], 200);
         } else {
@@ -79,14 +79,14 @@ class ApiController extends BaseController
                     'type' => $type,
                     'id_token' => $id_token,
                 ]);
-    
+
                 return response()->json(['success' => true, 'message' => "Welcome to join, {$user->name}", 'data' => $user], 200);
             } else {
                 return response()->json(['success' => false, 'message' => "{$user->email} already exists"], 200);
             }
         }
     }
-    
+
 
 
 
@@ -95,11 +95,11 @@ class ApiController extends BaseController
         $email = $request->email;
         $password = $request->password;
         $id_token = $request->id_token;
-    
+
         $user = User::where('email', $email)->first();
-    
+
         if ($user != null) {
-           
+
         if ($id_token != null && $id_token == $user->id_token) {
                 return response()->json(['success' => true, 'data' => $user], 200);
         } else if($password == $user->password) {
@@ -111,7 +111,7 @@ class ApiController extends BaseController
 
         return response()->json(['success' => false, 'message' => 'User not registered'], 404);
     }
-    
+
 
 
 
@@ -134,9 +134,9 @@ class ApiController extends BaseController
     public function getUser(Request $request)
     {
         $id = $request->id;
-        
+
         $user = User::where('id', $id)->first();
-        
+
         return response()->json(['success' => true, 'data' => $user], 200);
     }
 
@@ -152,10 +152,10 @@ class ApiController extends BaseController
         }
 
         $userData = DB::table('user_solutions')->where('uid', $id)->first();
-    
+
         return response()->json(['success' => true, 'data' => $userData], 200);
     }
-    
+
 
 
     // get solution by id witch is store in user_solutions table in solution_id
@@ -163,20 +163,20 @@ class ApiController extends BaseController
     {
         $id = $request->id;
 
-    
+
         $filterArray = explode(',', $id);
-    
+
         $solutions = Solutions::all()->filter(function ($solution) use ($filterArray) {
             $solutionFilters = explode(',', $solution->id);
-    
+
             return !empty(array_intersect($solutionFilters, $filterArray));
         });
-    
+
         $formattedSolutions = $solutions->values()->toArray();
-    
+
         return response()->json(['success' => true, 'data' => $formattedSolutions], 200);
     }
-    
+
 
     // This funcation return all questions witch is ask when user enter first time in app or when user signup in the app
     public function getQuestion()
@@ -193,20 +193,20 @@ class ApiController extends BaseController
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-    
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
-            
+
             $image->storeAs('img', $imageName, 'public');
-    
+
             $user = QA::create([
                 'question' => 'testing question',
                 'img' => $imageName,
                 'icon' => 'NULL ICON',
                 'color_code' => '75E6A4',
             ]);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
@@ -215,22 +215,22 @@ class ApiController extends BaseController
                 ],
             ], 201);
         }
-    
+
         return response()->json([
             'success' => false,
             'message' => 'Image upload failed',
         ], 400);
     }
-    
 
 
-    
+
+
 
     //  This funcation return all filters
     public function getFilteredData()
     {
         $filters = DB::table('filters')->get();
-    
+
         $allFilter = (object) [
             'id' => 0,
             'filter_name' => 'All',
@@ -239,10 +239,10 @@ class ApiController extends BaseController
         ];
 
         $filters->prepend($allFilter);
-    
+
         return response()->json($filters);
     }
-    
+
 
 
 // This funcation return all solutions with filter id and if null return all solutions
@@ -460,6 +460,8 @@ public function getSolution($userId) {
     return response()->json($solutions);
 }
 
+
+// ajay
 
 
 }
